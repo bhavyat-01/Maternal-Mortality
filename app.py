@@ -22,8 +22,8 @@ gemini_uri = os.getenv("gemini_uri")
 
 
 
-selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
-    icons=['house', 'activity', "chat", 'hospital'], 
+selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings', 'Predict My Risk'], 
+    icons=['house', 'activity', "chat", 'hospital', 'heart-pulse-fill'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
 if(selected2 == "Home"):
@@ -253,9 +253,7 @@ if(selected2 == "Chat Support"):
 
 
 if(selected2 == "Hospital Ratings"):
-    doc = hospitals.find_one({"hospitalName": "G"})
-
-    
+    arr = list(hospitals.find())
     #for hospital in arr:
     def create_card(hospital_name, tagged_words):
     
@@ -280,28 +278,43 @@ if(selected2 == "Hospital Ratings"):
             </h3>
             <div style="display: flex; flex-direction: row; align-self: center; justify-content: space-between; gap: 20px; text-align: right;">
                 {words_html}
-                <button style="
-                    padding: 10px 20px;
-                    background-color: #4CAF50;
-                    color: black;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 14px;
-                " onclick="displayInfo({hospital_name})">
-                    Complaints
-                </button>
+                
             </div>
             
         </div>
         """
         return card_html
 
-    def displayInfo(hospital_name):
-        st.write(hospital_name)
-        print("Clicked")
-    card_html = create_card(doc["hospitalName"], doc["tagged_words"])
-    st.html(card_html)
+    if "complaint_visibility" not in st.session_state:
+        st.session_state["complaint_visibility"] = {}
+    for hospital in arr:
+        final_tagged = sorted(hospital["taggedWords"], key=lambda x: x["count"], reverse=True)
+        final_tagged = [item["word"] for item in final_tagged[:3]]
+        card_html = create_card(hospital["hospitalName"], final_tagged)
+        
+        # Add a unique key to the button using the hospital's _id
+        if st.button("Complaints", key=f"complaints_{hospital['_id']}"):
+            # Set complaint visibility for this hospital to True
+            st.session_state["complaint_visibility"][hospital["_id"]] = True
+        
+        # Display complaints if visible
+        if st.session_state["complaint_visibility"].get(hospital["_id"], False):
+            st.write(f"Complaints for {hospital['hospitalName']}:")
+            for item in hospital["complaint"]:
+                st.write(f"- {item}")
+            
+            # Add a "Close" button to hide complaints
+            if st.button("Close", key=f"close_{hospital['_id']}"):
+                # Immediately set complaint visibility to False
+                st.session_state["complaint_visibility"][hospital["_id"]] = False
+                # Force a rerun to update the UI immediately
+                st.rerun()
+
+        st.html(card_html)
+
+
+
+        
 
                 
 
