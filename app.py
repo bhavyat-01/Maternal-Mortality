@@ -5,16 +5,13 @@ from google import genai
 
 from streamlit_option_menu import option_menu
 
-
-# 2. horizontal menu
-selected2 = option_menu(None, ["Home", "Upload", "Tasks", 'Settings'], 
-    icons=['house', 'cloud-upload', "list-task", 'gear'], 
+selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
+    icons=['house', 'activity', "chat", 'hospital'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
 if(selected2 == "Home"):
 
     st.header("What is maternal mortality rate?")
-
 
     maternal_mortality_rate = """
     Maternal Mortality Rate (MMR) is the number of women who die due to pregnancy-related problems per 100,000 live births within a certain time period. These deaths can happen during pregnancy, childbirth, or up to 42 days after giving birth. The main causes are complications like heavy bleeding, infections, high blood pressure, and unsafe abortions, many of which can be prevented with proper care.
@@ -27,8 +24,6 @@ if(selected2 == "Home"):
     st.text(maternal_mortality_rate)
 
     df2 = pd.read_csv('race.csv')
-
-
 
     fig1 = px.line(df2, x='X.1', y=['White', 'Hispanic', 'Black', 'Asian'], 
                 markers=True, title='Percentage of Mortality Rate vs. Race')
@@ -64,20 +59,36 @@ if(selected2 == "Home"):
     st.header("Our solution to help combat racial bias")
     st.text("To help fight racial bias in healthcare, we can create a Medical Bias Reporter system. This would allow patients and healthcare workers to report any instances of racial discrimination or unfair treatment. The system would be easy to use, letting people submit anonymous reports about biased behavior. These reports would be reviewed to find patterns, train staff, and make improvements. By using this tool, healthcare systems can become more aware of issues and work towards fairer and more equal treatment for everyone.")
 
-fig1 = px.line(df2, x='X.1', y=['White', 'Hispanic', 'Black', 'Asian'], 
-markers=True, title='Percentage of Mortality Rate vs. Race')
-fig1.update_layout(xaxis_title='Year', yaxis_title='Percentage of Mortality Rate')
+    fig1 = px.line(df2 , x='X.1', y=['White', 'Hispanic', 'Black', 'Asian'], 
+    markers=True, title='Percentage of Mortality Rate vs. Race')
+    fig1.update_layout(xaxis_title='Year', yaxis_title='Percentage of Mortality Rate')
 
-fig2 = px.line(df3, x='Year', y=['Under 25', '25-39', '40 and Older'], 
-markers=True, title='Percentage of Mortality Rate vs. Age')
-fig2.update_layout(xaxis_title='Year', yaxis_title='Percentage of Mortality Rate')
+    fig2 = px.line(df3, x='Year', y=['Under 25', '25-39', '40 and Older'], 
+    markers=True, title='Percentage of Mortality Rate vs. Age')
+    fig2.update_layout(xaxis_title='Year', yaxis_title='Percentage of Mortality Rate')
     
-st.write('Generating Response...')
-client = genai.Client(api_key="AIzaSyBhWqsOUmAgsq2YDinL_28i0qAO-vxC0Bc")
-response = client.models.generate_content(
-    model="gemini-2.0-flash", contents="Explain how AI works"
-)
-st.write(response.text)
 
+if(selected2 == "Send Report"):
+    with st.form("my_form"):
+        st.header("Report a hospital")
+        hospital_name = st.text_input("Enter the Hospital Name")
+        hospital_location = st.text_input("Enter the Hospital Location")
+        complaint = st.text_input("Enter your Complaint")
 
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            st.write("Hospital Name: ", hospital_name, "Hospital Location", hospital_location)
 
+if(selected2 == "Chat Support"):
+    st.header("Chatbot Support Center")
+    
+    question = st.text_input('Ask any concerns or questions...')
+
+    if question:
+        client = genai.Client(api_key="AIzaSyBhWqsOUmAgsq2YDinL_28i0qAO-vxC0Bc")
+        response = client.models.generate_content(
+            model="gemini-2.0-flash", contents=question
+        )
+        st.write(response.text)
+    
+st.write("Outside the form")
