@@ -88,6 +88,9 @@ if(selected2 == "Send Report"):
 
     if 'touched_question' not in st.session_state:
         st.session_state.touched_question = ""
+        
+    if 'data' not in st.session_state:
+        st.session_state.data = {}
     
     with st.form("my_form"):
         st.header("Report a hospital")
@@ -117,19 +120,84 @@ if(selected2 == "Send Report"):
             else:
                 prompt = complaint
                 
-            data = {"hospitalName": hospital_name, "hospitalLocation": hospital_location, "complaint": prompt}
-            response = client.models.generate_content(
-                model="gemini-2.0-flash", contents="YES OR NO? One word answer ONLY. Does response display mistreatment OR is it ON TOPIC with  Maternal Mortality OR treatment in hospitals?: "+prompt
+            keyWords = client.models.generate_content(
+                model="gemini-2.0-flash", contents="Identify AT MOST 3 KEYWORDS or ADJECTIVES used here and return them separated with commas: "+prompt
             )
+            
+            arr_key_words = keyWords.text.split(',')
+            
+            #first obtain the existing document
+            query = {
+                "hospitalName": hospital_name,
+                "hospitalLocation": hospital_location
+            }
+            
+            existing_doc = hospitals.find_one(query)
+            
+            # if hospital exists
+            if existing_doc:
+                
+                tagged_array = existing_doc['taggedWords']
+                
+                for word in arr_key_words:
+                    found = False
+                    for obj in tagged_array:
+                        word = word.strip().lower()
+                        if obj["word"] == word:
+                            obj["count"] = obj["count"] + 1
+                            found = True
+                    if not found:
+                        tagged_array.append({"word": word, "count": 1})
+                            
+                hospitals.update_one(
+                    query,
+                    {
+                    "$push": {"complaint": prompt},  # Add the new complaint to the array
+                    "$set": {"taggedWords": tagged_array}
+                    }
+                )
+                
+                st.write("Complaint Submitted!")
+                
+            else:
+                #create JSON with each array element and number 1
+                json_key_words =  [None]*3
+                
+                i = 0
+                for word in arr_key_words:
+                    
+                    #gets rid of new line character
+                    if "\n" in word:
+                        word = word[0:len(word)-1]
+                    #gets rid of spaces
+                    word = word.strip()
+                    #adds json object
+                    json_key_words[i] = {"word": word.lower(), "count": 1}
+                    i = i+1
+                
+                # If the document doesn't exist, create a new one
+                st.session_state.data = {
+                    "hospitalName": hospital_name,
+                    "hospitalLocation": hospital_location,
+                    "complaint": [prompt],  # Initialize the array with the new complaint
+                    "taggedWords": json_key_words
+                }
+                    
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash", contents="YES OR NO? One word answer ONLY. Does response display mistreatment OR is it ON TOPIC with  Maternal Mortality OR treatment in hospitals?: "+prompt
+                )
                         
+                if response.text.upper().strip()=="YES":
+                    if len(st.session_state.data) > 0:
+                        ret = hospitals.insert_one(st.session_state.data)
 
-            if response.text.upper().strip()=="YES":
-                ret = hospitals.insert_one(data)
-                verify = st.markdown('Verified ✔')
-                if ret: 
-                    st.write("Submitted")
-            elif response.text.upper().strip()=="NO":
-                verify = st.markdown('Not Verified X')
+                    verify = st.markdown('Verified ✔')
+                    
+                    if ret: 
+                        st.write("Submitted")
+                            
+                elif response.text.upper().strip()=="NO":
+                    verify = st.markdown('Not Verified X')
 
 
 
