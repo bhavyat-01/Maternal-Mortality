@@ -7,18 +7,12 @@ from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-uri = ""
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+uri = "mongodb+srv://eshav:maternalmortality@cluster0.px36g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(uri, server_api=ServerApi('1'), ssl = True)
 
 db = client['Mortality-App']
 users = db["Users"]
+
 
 selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
     icons=['house', 'activity', "chat", 'hospital'], 
@@ -92,7 +86,14 @@ if(selected2 == "Send Report"):
 
         submitted = st.form_submit_button("Submit")
         if submitted:
-            st.write("Hospital Name: ", hospital_name, "Hospital Location", hospital_location)
+            data = {"hospitalName": hospital_name, "hospitalLocation": hospital_location, "complaint": complaint}
+            ret = users.insert_one(data)
+            if ret:
+                st.write("Submitted")
+
+
+
+
 
 if(selected2 == "Chat Support"):
     st.header("Chatbot Support Center")
@@ -102,7 +103,7 @@ if(selected2 == "Chat Support"):
     if question:
         client = genai.Client(api_key="AIzaSyBhWqsOUmAgsq2YDinL_28i0qAO-vxC0Bc")
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents="DON't answer unless related TO MATERNAL MORTALITY: "+question
+            model="gemini-2.0-flash", contents=question
         )
         st.write(response.text)
     
