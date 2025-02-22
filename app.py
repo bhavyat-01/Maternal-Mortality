@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from streamlit_chat import message
-
+from streamlit_card import card
 
 
 st.set_page_config(layout="wide")
@@ -18,7 +18,8 @@ uri = os.getenv("MONGO_URI")
 client = MongoClient(uri, tls=True,tlsAllowInvalidCertificates=True)
 db = client['Mortality-App']
 hospitals = db["Hospitals"]
-gemini_uri = os.getenv("GEM_URI")
+gemini_uri = os.getenv("gemini_uri")
+
 
 
 selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
@@ -249,3 +250,61 @@ if(selected2 == "Chat Support"):
 
         message(reply, is_user=True) 
     
+
+
+if(selected2 == "Hospital Ratings"):
+    doc = hospitals.find_one({"hospitalName": "G"})
+
+    
+    #for hospital in arr:
+    def create_card(hospital_name, tagged_words):
+    
+        words_html = "".join([f'<div style="display: block; font-size: 14px; color: #555; align-self:center; background-color: #FD574C; padding: 5px;padding-left: 10px; padding-right: 10px; border-radius: 20px; text-align: right; border-color: white; color: white">{word}</div>' for word in tagged_words])
+        card_html = f"""
+        <div style="
+            width: 100%;
+            height: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            border-style: solid;
+            border-color: white;
+            margin-bottom: 20px;
+        ">
+            <h3 style="font-size: 18px; font-weight: bold; color: white">
+                {hospital_name}
+            </h3>
+            <div style="display: flex; flex-direction: row; align-self: center; justify-content: space-between; gap: 20px; text-align: right;">
+                {words_html}
+                <button style="
+                    padding: 10px 20px;
+                    background-color: #4CAF50;
+                    color: black;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                " onclick="displayInfo({hospital_name})">
+                    Complaints
+                </button>
+            </div>
+            
+        </div>
+        """
+        return card_html
+
+    def displayInfo(hospital_name):
+        st.write(hospital_name)
+        print("Clicked")
+    card_html = create_card(doc["hospitalName"], doc["tagged_words"])
+    st.html(card_html)
+
+                
+
+        
+
+        
