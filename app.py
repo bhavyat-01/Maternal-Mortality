@@ -102,7 +102,7 @@ if(selected2 == "Chat Support"):
     if question:
         client = genai.Client(api_key="AIzaSyBhWqsOUmAgsq2YDinL_28i0qAO-vxC0Bc")
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents=question
+            model="gemini-2.0-flash", contents="DON't answer unless related TO MATERNAL MORTALITY: "+question
         )
         st.write(response.text)
     
