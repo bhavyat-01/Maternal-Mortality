@@ -112,9 +112,6 @@ if(selected2 == "Send Report"):
                 verify = st.markdown('Not Verified X')
 
 
-
-
-
 if(selected2 == "Chat Support"):
     st.header("Chatbot Support Center")
     
@@ -123,7 +120,7 @@ if(selected2 == "Chat Support"):
     if question:
         client = genai.Client(api_key=gemini_uri)
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents=question
+            model="gemini-2.0-flash", contents="Don't answer if outside of scope of maternal mortality: "+question
         )
         st.write(response.text)
     
