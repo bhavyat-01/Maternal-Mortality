@@ -2,8 +2,23 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from google import genai
-
 from streamlit_option_menu import option_menu
+
+st.set_page_config(layout="wide")
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+uri = ""
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+
+db = client['Mortality-App']
+users = db["Users"]
 
 selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
     icons=['house', 'activity', "chat", 'hospital'], 
@@ -91,4 +106,3 @@ if(selected2 == "Chat Support"):
         )
         st.write(response.text)
     
-st.write("Outside the form")
