@@ -7,15 +7,9 @@ st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 
 
-# 2. horizontal menu
-selected2 = option_menu(None, ["Home", "Upload", "Tasks", 'Settings'], 
-    icons=['house', 'cloud-upload', "list-task", 'gear'], 
+selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
+    icons=['house', 'activity', "chat", 'hospital'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
-
-
-
-
-
 
 if(selected2 == "Home"):
 
@@ -71,7 +65,17 @@ if(selected2 == "Home"):
     st.text("To help fight racial bias in healthcare, we can create a Medical Bias Reporter system. This would allow patients and healthcare workers to report any instances of racial discrimination or unfair treatment. The system would be easy to use, letting people submit anonymous reports about biased behavior. These reports would be reviewed to find patterns, train staff, and make improvements. By using this tool, healthcare systems can become more aware of issues and work towards fairer and more equal treatment for everyone.")
 
 
+if(selected2 == "Send Report"):
+    with st.form("my_form"):
+        st.header("Report a hospital")
+        hospital_name = st.text_input("Enter the Hospital Name")
+        hospital_location = st.text_input("Enter the Hospital Location")
+        complaint = st.text_input("Enter your Complaint")
 
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            st.write("Hospital Name: ", hospital_name, "Hospital Location", hospital_location)
 
+st.write("Outside the form")
 
 
