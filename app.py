@@ -3,13 +3,21 @@ import pandas as pd
 import plotly.express as px
 from google import genai
 from streamlit_option_menu import option_menu
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 st.set_page_config(layout="wide")
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-uri = "mongodb+srv://eshav:maternalmortality@cluster0.px36g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = MongoClient(uri, server_api=ServerApi('1'), ssl = True)
 
+uri = os.getenv("MONGO_URI")
+gemini_uri = os.getenv("GEM_URI")
+client = MongoClient(
+    uri,
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
 db = client['Mortality-App']
 users = db["Users"]
 
@@ -85,11 +93,23 @@ if(selected2 == "Send Report"):
         complaint = st.text_input("Enter your Complaint")
 
         submitted = st.form_submit_button("Submit")
+        verify = st.empty()
+        
         if submitted:
             data = {"hospitalName": hospital_name, "hospitalLocation": hospital_location, "complaint": complaint}
-            ret = users.insert_one(data)
-            if ret:
-                st.write("Submitted")
+            
+            client = genai.Client(api_key=gemini_uri)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash", contents="YES OR NO? One word answer only. Is this credible AND ON TOPIC with Maternal Mortality?: "+complaint
+            )
+
+            if response.text.upper().strip()=="YES":
+                ret = users.insert_one(data)
+                verify = st.markdown('Verified ✔')
+                if ret: 
+                    st.write("Submitted")
+            elif response.text.upper().strip()=="NO":
+                verify = st.markdown('Not Verified X')
 
 
 
@@ -101,9 +121,10 @@ if(selected2 == "Chat Support"):
     question = st.text_input('Ask any concerns or questions...')
 
     if question:
-        client = genai.Client(api_key="AIzaSyBhWqsOUmAgsq2YDinL_28i0qAO-vxC0Bc")
+        client = genai.Client(api_key=gemini_uri)
         response = client.models.generate_content(
             model="gemini-2.0-flash", contents=question
         )
         st.write(response.text)
+    
     
