@@ -15,11 +15,10 @@ st.set_page_config(layout="wide")
 
 load_dotenv()
 uri = os.getenv("MONGO_URI")
-client = MongoClient(uri, server_api=ServerApi('1'), ssl = True)
+client = MongoClient(uri, tls=True,tlsAllowInvalidCertificates=True)
 db = client['Mortality-App']
-users = db["Users"]
-gemini_uri = os.getenv("gemini_uri")
-
+hospitals = db["Hospitals"]
+gemini_uri = os.getenv("GEM_URI")
 
 
 selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
@@ -86,25 +85,46 @@ if(selected2 == "Home"):
     
 
 if(selected2 == "Send Report"):
+
+    if 'touched_question' not in st.session_state:
+        st.session_state.touched_question = ""
+    
     with st.form("my_form"):
         st.header("Report a hospital")
         hospital_name = st.text_input("Enter the Hospital Name")
         hospital_location = st.text_input("Enter the Hospital Location")
-        complaint = st.text_input("Enter your Complaint")
-
+        complaint = st.text_input("Enter your complaints via bullets and ask AI to construct a response. Please be specific with examples of what happend. ")
+        ai_answer = st.form_submit_button('Click to touch up answer')
+    
+        if ai_answer:
+            client = genai.Client(api_key=gemini_uri)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash", contents="Touch up this complaint as if you are complaining under 50 words. No madlib brackets: "+complaint
+            )
+            st.text(response.text)
+            st.session_state.touched_question = response.text        
+            
         submitted = st.form_submit_button("Submit")
         verify = st.empty()
         
+        
         if submitted:
-            data = {"hospitalName": hospital_name, "hospitalLocation": hospital_location, "complaint": complaint}
-            
             client = genai.Client(api_key=gemini_uri)
+            prompt = ""; 
+            
+            if len(st.session_state.touched_question) > 0:
+                prompt = st.session_state.touched_question
+            else:
+                prompt = complaint
+                
+            data = {"hospitalName": hospital_name, "hospitalLocation": hospital_location, "complaint": prompt}
             response = client.models.generate_content(
-                model="gemini-2.0-flash", contents="YES OR NO? One word answer only. Is this credible AND ON TOPIC with Maternal Mortality?: "+complaint
+                model="gemini-2.0-flash", contents="YES OR NO? One word answer ONLY. Does response display mistreatment OR is it ON TOPIC with  Maternal Mortality OR treatment in hospitals?: "+prompt
             )
+                        
 
             if response.text.upper().strip()=="YES":
-                ret = users.insert_one(data)
+                ret = hospitals.insert_one(data)
                 verify = st.markdown('Verified ✔')
                 if ret: 
                     st.write("Submitted")
@@ -160,8 +180,4 @@ if(selected2 == "Chat Support"):
         reply = response.text if response.text else "I'm not sure how to respond."
 
         message(reply, is_user=True) 
-    
-
-
-    
     
