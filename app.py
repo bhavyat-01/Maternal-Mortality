@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.express as px
 from google import genai
 
-
 df2 = pd.read_csv('race.csv')
 
 fig1 = px.line(df2, x='X.1', y=['White', 'Hispanic', 'Black', 'Asian'], 
@@ -31,3 +30,6 @@ response = client.models.generate_content(
     model="gemini-2.0-flash", contents="Explain how AI works"
 )
 st.write(response.text)
+
+
+
