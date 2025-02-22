@@ -1,25 +1,25 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from google import genai
 from streamlit_option_menu import option_menu
-import os
 from dotenv import load_dotenv
-
-load_dotenv()
-st.set_page_config(layout="wide")
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from streamlit_chat import message
 
+
+
+st.set_page_config(layout="wide")
+
+load_dotenv()
 uri = os.getenv("MONGO_URI")
-gemini_uri = os.getenv("GEM_URI")
-client = MongoClient(
-    uri,
-    tls=True,
-    tlsAllowInvalidCertificates=True
-)
+client = MongoClient(uri, server_api=ServerApi('1'), ssl = True)
 db = client['Mortality-App']
 users = db["Users"]
+gemini_uri = os.getenv("gemini_uri")
+
 
 
 selected2 = option_menu(None, ["Home", "Send Report", "Chat Support", 'Hospital Ratings'], 
@@ -112,16 +112,56 @@ if(selected2 == "Send Report"):
                 verify = st.markdown('Not Verified X')
 
 
+
 if(selected2 == "Chat Support"):
-    st.header("Chatbot Support Center")
     
+    st.header("Chatbot Support Center")
+
+    client = genai.Client(api_key=gemini_uri)
     question = st.text_input('Ask any concerns or questions...')
 
+    system_message = """
+        You are an expert on maternal mortality. Stay focused on prompts related to maternal mortality. For general greetings ONLY, you can respond with appropriate responses.
+
+        If the user asks a question that is not related to maternal mortality, do not repeat the user's question or engage in a literal response. Instead, respond with:
+
+        "Unfortunately, that doesn't relate to maternal mortality. Please ask a question related to maternal mortality."
+
+        If the user misspells something or makes a typo, do not repeat the question verbatim. Ignore the spelling issue and provide a relevant, on-topic response (or indicate the need for a maternal mortality-related question). For example:
+
+        Example 1:
+
+        User: What are the leading causes of maternal mortality?
+        Assistant: The leading causes of maternal mortality include hemorrhage, hypertension, infection, and complications during delivery.
+        Example 2:
+
+        User: How can maternal mortality be reduced?
+        Assistant: Reducing maternal mortality involves improving access to prenatal care, skilled birth attendants, and emergency obstetric care.
+        Example 3:
+
+        User: Hello
+        Assistant: Hello! Do you have any questions relating to maternal mortality?
+        Example 4:
+
+        User: Whats your fav movie?
+        Assistant: Unfortunately, that doesn’t relate to maternal mortality. Please ask a question related to maternal mortality.
+        Example 5:
+
+        User: Wht are the main causs of maternal mortlaity?
+        Assistant: The leading causes of maternal mortality include hemorrhage, hypertension, infection, and complications during delivery.
+
+    """
+
     if question:
-        client = genai.Client(api_key=gemini_uri)
+        message(question) 
         response = client.models.generate_content(
-            model="gemini-2.0-flash", contents="Don't answer if outside of scope of maternal mortality: "+question
+            model="gemini-2.0-flash", contents=system_message + question
         )
-        st.write(response.text)
+        reply = response.text if response.text else "I'm not sure how to respond."
+
+        message(reply, is_user=True) 
+    
+
+
     
     
