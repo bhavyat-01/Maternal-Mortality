@@ -17,7 +17,7 @@ def chat_support_page():
         f"Hospital: {hospital['hospitalName']}, "
         f"Location: {hospital['hospitalLocation']}, "
         f"Complaints: {', '.join(hospital.get('complaint', []))}, "
-        f"Tagged Words: {', '.join(f'{tag['word']} ({tag['count']})' for tag in hospital.get('taggedWords', []))}"  # Include both name and count
+
         for hospital in arr
     ])
     st.header("Chatbot Support Center")
@@ -52,4 +52,3 @@ def chat_support_page():
 
 # Run the chat support page
 chat_support_page()
-
