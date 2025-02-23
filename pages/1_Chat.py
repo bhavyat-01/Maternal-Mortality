@@ -24,6 +24,13 @@ def chat_support_page():
 
     st.write("Welcome! You can ask some questions about maternal health in general or questions on hospitals that have bad reviews.")
 
+    st.write("Here are some sample questions to ask on maternal mortality:")
+    st.write("1. Give me some statistics on maternal mortality?")
+    st.write("2. What age has the highest risk of maternal death?")
+    st.write("You can also ask us questions about our database on hospitals with reported incidences of bias")
+    st.write("1. What are some hospitals that have a bad rating?")
+    st.write("2. What are some key complaints in *hospital-name* (to look at reported hospitals, check Ratings tab or ask Chat)")
+
     question = st.text_input("Ask any concerns or questions...")
 
     system_message = f"""
