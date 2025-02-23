@@ -24,7 +24,7 @@ def predictRisk():
 
         if button:
             # Use the model for predictions
-            predictions = model.predict(np.array([[int(age), int(SBP), int(DBP), int(BS), int(BT), int(HR)]]))
+            predictions = model.predict(np.array([[float(age), float(SBP), float(DBP), float(BS), float(BT), float(HR)]]))
             predicted_class = tf.argmax(predictions, axis=1).numpy()[0]  # Get the predicted class
             
             if(predicted_class == 0):
