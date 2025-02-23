@@ -27,7 +27,7 @@ def hospital_ratings_page():
             border-color: white;
             margin-bottom: 20px;
         ">
-            <h3 style="font-size: 18px; font-weight: bold; color: white">
+            <h3 style="font-size: 18px; font-weight: bold; color: #FD574C">
                 {hospital_name}
             </h3>
             <div style="display: flex; flex-direction: row; flex-wrap: wrap; align-self: center; justify-content: space-between; gap: 20px; text-align: right;">
