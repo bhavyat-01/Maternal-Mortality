@@ -35,6 +35,8 @@ def predictRisk():
             else:
                 risk_level = "high"
             
+            st.text("You are at "+risk_level+" risk")
+
             response = get_gemini_response("UNDER 200 WORDS: What can I do if I am at "+risk_level+" risk for maternal mortality? Specifically age wise.")
             st.markdown("To prevent any unfortunate event, "+response)
     
