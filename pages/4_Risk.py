@@ -29,11 +29,11 @@ def predictRisk():
             predicted_class = tf.argmax(predictions, axis=1).numpy()[0]  # Get the predicted class
             
             if(predicted_class == 0):
-                st.text("You are at low risk")
-            if(predicted_class == 1):
-                st.text("You are at medium risk")
-            if(predicted_class == 2):
-                st.text("You are at high risk")
+                risk_level = "low"
+            elif(predicted_class == 1):
+                risk_level = "medium"
+            else:
+                risk_level = "high"
             
             response = get_gemini_response("UNDER 200 WORDS: What can I do if I am at "+risk_level+" risk for maternal mortality? Specifically age wise.")
             st.markdown("To prevent any unfortunate event, "+response)
