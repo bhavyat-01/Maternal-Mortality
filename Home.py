@@ -42,6 +42,5 @@ with col1:
 with col2:
     st.plotly_chart(fig2, use_container_width=True, key="fig2")
 
-st.header("Our solution to help combat racial bias")
-st.text("To help fight racial bias in healthcare, we can create a Medical Bias Reporter system. This would allow patients and healthcare workers to report any instances of racial discrimination or unfair treatment. The system would be easy to use, letting people submit anonymous reports about biased behavior. These reports would be reviewed to find patterns, train staff, and make improvements. By using this tool, healthcare systems can become more aware of issues and work towards fairer and more equal treatment for everyone.")
-
+st.header("Our Solution to Combat Maternal Mortality Rates in Healthcare")
+st.text("To address racial bias in healthcare, we developed a Medical Bias Reporter system. This platform enables patients and healthcare professionals to anonymously report instances of racial discrimination or unfair treatment. By analyzing these reports, we can identify patterns, improve training programs, and drive systemic change toward equitable healthcare for all.Additionally, we created a Pregnancy Risk Predictor using machine learning. This tool leverages patient data to assess potential risks during pregnancy, helping doctors make more informed decisions and provide personalized care. By integrating AI-driven insights with bias reporting, we aim to foster a more inclusive and data-driven approach to improving healthcare outcomes.")
