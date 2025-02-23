@@ -17,14 +17,14 @@ To reduce maternal deaths, it is important to improve healthcare, ensure skilled
 st.text(maternal_mortality_rate)
 
 # Load data
-df2 = pd.read_csv("assets/race.csv")
-df3 = pd.read_csv("assets/age.csv")
+df3 = pd.read_csv("assets/race.csv")
+df2 = pd.read_csv("assets/age.csv")
 
 # Create plots
-fig1 = px.line(df3, x="X.1", y=["White", "Hispanic", "Black", "Asian"], markers=True, title="Percentage of Mortality Rate vs. Race")
+fig1 = px.line(df2, x="X.1", y=["White", "Hispanic", "Black", "Asian"], markers=True, title="Percentage of Mortality Rate vs. Race")
 fig1.update_layout(xaxis_title="Year", yaxis_title="Percentage of Mortality Rate")
 
-fig2 = px.line(df2, x="Year", y=["Under 25", "25-39", "40 and Older"], markers=True, title="Percentage of Mortality Rate vs. Age")
+fig2 = px.line(df3, x="Year", y=["Under 25", "25-39", "40 and Older"], markers=True, title="Percentage of Mortality Rate vs. Age")
 fig2.update_layout(xaxis_title="Year", yaxis_title="Percentage of Mortality Rate")
 
 # Display plots and text
