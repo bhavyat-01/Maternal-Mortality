@@ -30,7 +30,7 @@ def hospital_ratings_page():
             <h3 style="font-size: 18px; font-weight: bold; color: white">
                 {hospital_name}
             </h3>
-            <div style="display: flex; flex-direction: row; align-self: center; justify-content: space-between; gap: 20px; text-align: right;">
+            <div style="display: flex; flex-direction: row; flex-wrap: wrap; align-self: center; justify-content: space-between; gap: 20px; text-align: right;">
                 {words_html}
             </div>
         </div>
