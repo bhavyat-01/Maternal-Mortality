@@ -17,8 +17,8 @@ To reduce maternal deaths, it is important to improve healthcare, ensure skilled
 st.text(maternal_mortality_rate)
 
 # Load data
-df3 = pd.read_csv("assets/race.csv")
-df2 = pd.read_csv("assets/age.csv")
+df2 = pd.read_csv("assets/race.csv")
+df3 = pd.read_csv("assets/age.csv")
 
 # Create plots
 fig1 = px.line(df2, x="X.1", y=["White", "Hispanic", "Black", "Asian"], markers=True, title="Percentage of Mortality Rate vs. Race")
@@ -32,13 +32,13 @@ col1, col2 = st.columns(2)
 with col1:
     st.plotly_chart(fig1, use_container_width=True, key="fig1")
 with col2:
-    st.subheader("Age as a Factor")
-    st.text("Age is an important factor in maternal mortality. Teenagers, especially those under 20, face higher risks due to physical immaturity, while women over 35 also experience increased risks due to age-related complications like high blood pressure, diabetes, and fertility issues. Women in their 20s to early 30s generally have the lowest risk, as their bodies are physically more equipped for pregnancy. Therefore, both very young and older mothers are at higher risk for complications during pregnancy and childbirth.")
+    st.subheader("Race as a Factor")
+    st.text("Race affects maternal mortality, with Black, Indigenous, and Hispanic women having higher risks than white women. This is due to factors like less access to good healthcare, higher rates of health problems, and economic struggles. Racial discrimination in healthcare can also lead to delays or poor treatment. To reduce these differences, it’s important to improve healthcare access and make sure all women get fair and timely care.")
 
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader("Race as a Factor")
-    st.text("Race affects maternal mortality, with Black, Indigenous, and Hispanic women having higher risks than white women. This is due to factors like less access to good healthcare, higher rates of health problems, and economic struggles. Racial discrimination in healthcare can also lead to delays or poor treatment. To reduce these differences, it’s important to improve healthcare access and make sure all women get fair and timely care.")
+    st.subheader("Age as a Factor")
+    st.text("Age is an important factor in maternal mortality. Teenagers, especially those under 20, face higher risks due to physical immaturity, while women over 35 also experience increased risks due to age-related complications like high blood pressure, diabetes, and fertility issues. Women in their 20s to early 30s generally have the lowest risk, as their bodies are physically more equipped for pregnancy. Therefore, both very young and older mothers are at higher risk for complications during pregnancy and childbirth.")
 with col2:
     st.plotly_chart(fig2, use_container_width=True, key="fig2")
 
