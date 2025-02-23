@@ -59,7 +59,7 @@ def send_report_page():
                     "complaint": [prompt],
                     "taggedWords": json_key_words,
                 }
-                response = get_gemini_response("YES OR NO? One word answer ONLY. Does response display mistreatment OR is it ON TOPIC with Maternal Mortality OR treatment in hospitals?: " + prompt)
+                response = get_gemini_response("YES OR NO? One word answer ONLY. Does response display mistreatment AND is it ON TOPIC with Maternal Mortality?: " + prompt)
                 if response.upper().strip() == "YES":
                     hospitals.insert_one(st.session_state.data)
                     verify.markdown("Verified ✔")
