@@ -2,6 +2,7 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from utils.gemini import get_gemini_response
 
 
 
