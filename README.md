@@ -1,4 +1,7 @@
 # Maternalyze
+
+Try it out: https://maternalyze.streamlit.app/
+
 # Inspiration
 Maternal mortality refers to a woman's death in childbirth or up to six weeks postpartum. It is a significant issue especially since over 80% of maternal mortality is preventable. The factors contributing to the rise in maternal deaths are inadequate access to appropriate healthcare, implicit bias in healthcare, and a lack of education. These are the issues that must be fixed in order to improve maternal health.
 
